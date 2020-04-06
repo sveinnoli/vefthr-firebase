@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{%block title%}Closed{% endblock %}
+
+{%block content%}
+<div class="base-container">
+    {% for x in list %}
+        <h3>{{x}}</h3>
+    {% endfor %}
+</div>
+{% endblock %}
