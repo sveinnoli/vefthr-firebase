@@ -18,18 +18,26 @@ config = {
 fb = pyrebase.initialize_app(config)
 db = fb.database()
 
-# Test route til að setja gögn í db
+#TODO : site, sign in and sign up option, seperate page for each when signed up is done checks if credentials are valid if they are redirect to sign in page, else bring an error message
+#TODO 2: add form to intake information to the server
+#fyi:: calling lst on the db returns a list of 2 things, [0]=UserID, [1] = type(dict) in the dict is the username/password
 @app.route('/')
 def index():
     return render_template("open.html")
 
-# Test route til að sækja öll gögn úr db
+@app.route('/signup')
+def signup():
+    return render_template("signup.html")
+
+@app.route('/signin')
+def signin():
+    return render_template("signin.html")
+
 @app.route('/closed')
 def lesa():
     u = db.child("notandi").get().val()
-    lst = list(u.items())
-    print(lst)
-    return render_template("closed.html", list=lst)
+    users = list(u.items())
+    return render_template("closed.html", users=users)
 
 if __name__ == "__main__":
 	app.run(debug=True)
