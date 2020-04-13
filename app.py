@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from pyrebase import pyrebase
 
+
 app = Flask(__name__)
 
 # tengin við firebase realtime database á firebase.google.com ( db hjá danielsimongalvez@gmail.com )
@@ -17,7 +18,8 @@ config = {
 
 fb = pyrebase.initialize_app(config)
 db = fb.database()
-
+userbase = db.child("account").get().val()
+users = list(userbase.items())
 #TODO : site, sign in and sign up option, seperate page for each when signed up is done checks if credentials are valid if they are redirect to sign in page, else bring an error message
 #TODO 2: add form to intake information to the server
 #fyi:: calling lst on the db returns a list of 2 things, [0]=UserID, [1] = type(dict) in the dict is the username/password
@@ -25,26 +27,33 @@ db = fb.database()
 def index():
     return render_template("open.html")
 
-@app.route('/signup')
-def signup():
-    return render_template("signup.html")
+@app.route('/signup', methods=['GET','POST'])
+def sign_up():
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        #check if user exists in db 
+        #Need to add redirect after post request to avoid resending the POST form again.
+        for key, value in userbase.items():
+            if value["password"] == password:
+                print("Password: {} already exists in the database".format(password))
+                return render_template("signup.html", method=['GET', 'POST'], error="Password already exists.")
+            else:
+                print(value["password"], password)
+        #db.child("account").push({"username":username, "password":password}) #Adds user to database
+    return render_template("signup.html", method=['GET', 'POST'], error="")
+    
 
 @app.route('/signin')
-def signin():
-    return render_template("signin.html")
+def sign_in():
+    #check if user exists in db if he does allow him access to a closed site.
+    return render_template("signin.html", method=['GET', 'POST'])
 
 @app.route('/closed')
-def lesa():
-    u = db.child("notandi").get().val()
-    users = list(u.items())
+def closed():
     return render_template("closed.html", users=users)
 
 if __name__ == "__main__":
 	app.run(debug=True)
 
-# skrifum nýjan í grunn hnútur sem heitir notandi 
-# db.child("notandi").push({"notendanafn":"dsg", "lykilorð":1234}) 
-
-# # förum í grunn og sækjum allar raðir ( öll gögn )
-# u = db.child("notandi").get().val()
-# lst = list(u.items())

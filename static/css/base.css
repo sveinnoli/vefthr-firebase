@@ -1,3 +1,8 @@
+:root {
+    --main-font: 'Roboto Condensed', sans-serif; 
+    --secondary-font: 'Rambla', sans-serif; 
+    --header-font: 'Black Han Sans', sans-serif; 
+}
 * {
     box-sizing: border-box;
     margin: 0;
@@ -14,6 +19,7 @@ body {
     font-family: var(--secondary-font);
     font-weight: 400;
     line-height: 1.5;
+    background: linear-gradient(to top right,rgba( 22, 22, 22, 0.7), 25%, rgba(82, 42, 97, 0.8));
 }
 
 html, body {
