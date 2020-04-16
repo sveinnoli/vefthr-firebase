@@ -15,10 +15,10 @@ config = {
     "appId": "1:459938427281:web:7b80b54378cc611a6dea30",
     "measurementId": "G-T1M5ZMHXXF"
 }
-
 fb = pyrebase.initialize_app(config)
 db = fb.database()
 userbase = db.child("account").get().val() 
+
 if userbase == None: # Avoids crashing if db is empty
     userbase = {}
 users = list(userbase.items())
@@ -31,6 +31,7 @@ def signup_check(username):
 
 def login_check(username, password):
     userData = {}
+    
     for key,value in userbase.items():
         if value["username"] == username:
             userData["user_id"] = key
@@ -43,6 +44,7 @@ def login_check(username, password):
 def index():
     return redirect(url_for("signup"))
 
+#-----------------Sign up-----------------
 #Maybe rename signup to account or something of the sort
 @app.route('/signup', methods=['GET','POST'])
 def signup():
@@ -57,6 +59,7 @@ def signup():
             return redirect(url_for('login'))
     return render_template("signup.html", error=error)  
 
+#-----------------Login-----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -70,6 +73,7 @@ def login():
             error = "Invalid credentials"
     return render_template("login.html", error=error)
 
+#-----------------Closed site-----------------
 @app.route('/closed', methods=['POST', 'GET'])
 def closed():
     name = None
