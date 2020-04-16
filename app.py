@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
-from pyrebase import pyrebase
-
-
+import os, pyrebase
+from flask import Flask, render_template, request, redirect, url_for, session
 app = Flask(__name__)
 
-# tengin við firebase realtime database á firebase.google.com ( db hjá danielsimongalvez@gmail.com )
+#Session key
+app.config['SECRET_KEY'] = os.urandom(16).hex()
+
 config = {
     "apiKey": "AIzaSyDDcL0pFjECQ-0j-1hgPFwLFrMnrUVT5SQ",
     "authDomain": "vefthr3-firebase.firebaseapp.com",
@@ -18,42 +18,77 @@ config = {
 
 fb = pyrebase.initialize_app(config)
 db = fb.database()
-userbase = db.child("account").get().val()
+userbase = db.child("account").get().val() 
+if userbase == None: # Avoids crashing if db is empty
+    userbase = {}
 users = list(userbase.items())
-#TODO : site, sign in and sign up option, seperate page for each when signed up is done checks if credentials are valid if they are redirect to sign in page, else bring an error message
-#TODO 2: add form to intake information to the server
-#fyi:: calling lst on the db returns a list of 2 things, [0]=UserID, [1] = type(dict) in the dict is the username/password
+
+def signup_check(username):
+    for key,value in userbase.items():
+        if value["username"] == username:
+            return False
+    return True
+
+def login_check(username, password):
+    userData = {}
+    for key,value in userbase.items():
+        if value["username"] == username:
+            userData["user_id"] = key
+            userData["username"] = username
+            userData["password"] = password
+            return userData
+    return False
+
 @app.route('/')
 def index():
-    return render_template("open.html")
+    return redirect(url_for("signup"))
 
+#Maybe rename signup to account or something of the sort
 @app.route('/signup', methods=['GET','POST'])
-def sign_up():
-    
+def signup():
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        #check if user exists in db 
-        #Need to add redirect after post request to avoid resending the POST form again.
-        for key, value in userbase.items():
-            if value["password"] == password:
-                print("Password: {} already exists in the database".format(password))
-                return render_template("signup.html", method=['GET', 'POST'], error="Password already exists.")
-            else:
-                print(value["password"], password)
-        #db.child("account").push({"username":username, "password":password}) #Adds user to database
-    return render_template("signup.html", method=['GET', 'POST'], error="")
-    
+        if signup_check(username) == False:
+            error = 'Invalid credentials'
+        elif signup_check(username) == True:
+            db.child("account").push({"username":username, "password":password})
+            return redirect(url_for('login'))
+    return render_template("signup.html", error=error)  
 
-@app.route('/signin')
-def sign_in():
-    #check if user exists in db if he does allow him access to a closed site.
-    return render_template("signin.html", method=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if login_check(username, password) != False:
+            session["user_session"] = login_check(username,password)
+            return redirect(url_for("closed"))
+        else:
+            error = "Invalid credentials"
+    return render_template("login.html", error=error)
 
-@app.route('/closed')
+@app.route('/closed', methods=['POST', 'GET'])
 def closed():
-    return render_template("closed.html", users=users)
+    name = None
+    if "user_session" in session:
+        name = session["user_session"]["username"]
+        if request.method == 'POST':
+            if "user_session" in session:
+                session.pop("user_session", None)
+                return redirect(url_for("login"))
+        return render_template("closed.html", name=name)
+    return(render_template("403.html"), 403)
 
+@app.errorhandler(403)
+def access_denied(e):
+    return render_template("403.html"), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for("closed"))
 if __name__ == "__main__":
 	app.run(debug=True)
 

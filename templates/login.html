@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{%block title%}Sign up{% endblock %}
+{%block title%}Sign in{% endblock %}
 
 {%block content%}
+<!-- Make a template for login/signin -->
 <div class="signin-form">
     <form method="POST">
         <fieldset>
@@ -9,21 +10,16 @@
             <div class="signin-popup">
                 <span class="error">{{error}}</span>
             </div>
-            {% endif %}
-            {% if success %}
-            <div class="signin-popup">
-                <span class="success">{{success}}</span>
-            </div>
-            {% endif %}
-            <legend>Sign up</legend>
+            {%endif%}
+            <legend>Login</legend>
             <label><p>Username:</p>
                 <input
                     required
                     type="text" 
                     name="username" 
-                    placeholder="5 - 20 Characters"
+                    placeholder="Username"
                     autofocus
-                    title="5 - 20 Characters"
+                    title="Username"
                     pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{4,20}$">
             </label>
             <label><p>Password:</p>
@@ -31,17 +27,15 @@
                     required
                     type="password" 
                     name="password" 
-                    placeholder="8 Characters 1 Number"
-                    title="8 Characters 1 Number"
+                    placeholder="Password"
+                    title="Password"
                     pattern="^(?=.*\d)(?=.*[a-z])(?=.*[a-z])(?!.*\s).*$">
             </label>
             <label>
-                <input type="submit" value="Sign up" name="sign-up">
+                <input type="submit" value="Login" name="sign-in">
             </label>
         </fieldset>
     </form>
 </div>
-<script>
 
-</script>
 {% endblock %}

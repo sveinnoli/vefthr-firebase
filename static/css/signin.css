@@ -13,7 +13,7 @@
     position: relative;
 }
 
-.error-popup {
+.signin-popup {
     position: absolute;
     top: 6px;
     width:200px;
@@ -24,13 +24,14 @@
     text-overflow:ellipsis;
 }
 
-.error-popup:hover {
+.signin-popup:hover {
     overflow:visible;
 }
 
-.error-popup .error {
+.signin-popup .error {
     color:red;
 }
+
 
 /* Calc offset is based on the width of the (object / 2) #Object divided by 2*/
 legend {
@@ -44,8 +45,7 @@ legend {
     border-top-right-radius: 10px;
     padding: 5px;
     width:100px;
-    display:flex;
-    justify-content: center;
+    text-align: center;
 }
 
 .signin-form input[type=text], .signin-form input[type=password], .signin-form input[type=email], .signin-form textarea{
