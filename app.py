@@ -31,8 +31,8 @@ def signup_check(username):
 
 def login_check(username, password):
     userData = {}
-    
-    for key,value in userbase.items():
+    newbase = db.child("account").get().val()
+    for key,value in newbase.items():
         if value["username"] == username:
             userData["user_id"] = key
             userData["username"] = username
@@ -55,6 +55,7 @@ def signup():
         if signup_check(username) == False:
             error = 'Invalid credentials'
         elif signup_check(username) == True:
+            print(userbase, "old")
             db.child("account").push({"username":username, "password":password})
             return redirect(url_for('login'))
     return render_template("signup.html", error=error)  
