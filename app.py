@@ -54,7 +54,7 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         if signup_check(username) == False:
-            error = 'Invalid credentials'
+            error = 'User already exists, try again.'
         elif signup_check(username) == True:
             db.child("account").push({"username":username, "password":password})
             return redirect(url_for('login'))
