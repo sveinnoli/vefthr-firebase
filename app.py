@@ -55,7 +55,6 @@ def signup():
         if signup_check(username) == False:
             error = 'Invalid credentials'
         elif signup_check(username) == True:
-            print(userbase, "old")
             db.child("account").push({"username":username, "password":password})
             return redirect(url_for('login'))
     return render_template("signup.html", error=error)  
