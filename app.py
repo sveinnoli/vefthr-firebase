@@ -24,7 +24,8 @@ if userbase == None: # Avoids crashing if db is empty
 users = list(userbase.items())
 
 def signup_check(username):
-    for key,value in userbase.items():
+    newbase = db.child("account").get().val()
+    for key,value in newbase.items():
         if value["username"] == username:
             return False
     return True
