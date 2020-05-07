@@ -40,6 +40,11 @@ def login_check(username, password):
             userData["password"] = password
             return userData
     return False
+def in_session():
+    if "user_session" in session:
+        return True
+    return False
+
 
 @app.route('/')
 def index():
@@ -64,15 +69,18 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if login_check(username, password) != False:
-            session["user_session"] = login_check(username,password)
-            return redirect(url_for("closed"))
-        else:
-            error = "Invalid credentials"
-    return render_template("login.html", error=error)
+    if in_session() == True:
+        return redirect(url_for("closed"))
+    else:
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            if login_check(username, password) != False:
+                session["user_session"] = login_check(username,password)
+                return redirect(url_for("closed"))
+            else:
+                error = "Invalid credentials"
+        return render_template("login.html", error=error)
 
 #-----------------Closed site-----------------
 @app.route('/closed', methods=['POST', 'GET'])
