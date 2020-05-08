@@ -34,7 +34,7 @@ def login_check(username, password):
     userData = {}
     newbase = db.child("account").get().val()
     for key,value in newbase.items():
-        if value["username"] == username:
+        if value["username"] == username and value["password"] == password:
             userData["user_id"] = key
             userData["username"] = username
             userData["password"] = password
@@ -86,7 +86,7 @@ def login():
 @app.route('/closed', methods=['POST', 'GET'])
 def closed():
     name = None
-    if "user_session" in session:
+    if in_session() == True:
         name = session["user_session"]["username"]
         if request.method == 'POST':
             if "user_session" in session:
